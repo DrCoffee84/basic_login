@@ -50,41 +50,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 
 		// Validamos el token
-
-		System.out.println("0");
-
-		System.out.println("username: "  + username);
-		System.out.println("getAuthentication: "  + SecurityContextHolder.getContext().getAuthentication());
 		Usuario userDetails;
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			System.out.println("1");
-
 			try {
-
 				userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-				System.out.println("2");
 				if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
-					System.out.println("3");
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 							userDetails, null, userDetails.getAuthorities());
 
-					System.out.println("4");
 					usernamePasswordAuthenticationToken
 							.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-
-					System.out.println("5");
 					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 					if(usernamePasswordAuthenticationToken.isAuthenticated()) {
 						String token = jwtTokenUtil.generateToken(userDetails);
 						response.addHeader("Refresh-Token", token);
-						System.out.println("6");
 					}
 
 				}
-				System.out.println("7");
 			} catch (UsernameNotFoundException e) {
 				logger.warn("Unable to get username from Token");
 			}
